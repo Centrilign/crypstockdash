@@ -173,8 +173,16 @@
 
   <link rel="preload" as="image" href="/assets/images/ui/favicon.png" />
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom" defer></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Chart core, then the time-scale + financial (candlestick) extensions, in dependency order -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/luxon@3.4.4" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.3.1" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial@0.2.1/dist/chartjs-chart-financial.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.2.0" defer></script>
 
   <link rel="stylesheet" href="frontend/style.css" />
 
@@ -182,12 +190,14 @@
 <body class="dark-mode">
 
   <div class="ticker-tape">
-    <div class="tape-track" id="tickerTape"></div>
+    <div class="tape-track" id="tickerTape">
+      <div class="tape-item"><span class="text-muted">Loading live market data…</span></div>
+    </div>
   </div>
 
   <header class="app-header">
     <div class="brand">
-      <img src="assets/images/ui/favicon.png" class="logo-img" alt="StockDash Logo" />
+      <img src="assets/images/ui/favicon.png" class="logo-img" alt="CrypStockDash Logo" />
       <h1>CRYPSTOCK<span class="accent">DASH</span></h1>
     </div>
     
@@ -198,6 +208,7 @@
       </div>
       <div id="autocompleteDropdown" class="autocomplete-suggestions"></div>
       <button onclick="loadStock()" class="btn-primary">Analyze</button>
+      <div id="searchStatusMessage" class="search-status-message" style="display:none;"></div>
     </div>
     
     <div class="header-actions">
@@ -214,6 +225,10 @@
     <main class="main-content-panel">
       
       <section class="stock-hero-card" id="stockHeroSection" style="display: none;">
+        <div class="hero-loading-overlay" id="heroLoadingOverlay" style="display:none;">
+          <div class="spinner"></div>
+          <span>Fetching live quote…</span>
+        </div>
         <div class="hero-layout-split">
           <div class="hero-core-profile">
             <div class="meta-row">
@@ -253,14 +268,17 @@
           <div class="control-row">
             <span class="control-group-label">Display:</span>
             <div class="chart-controls">
-              <button class="btn-toggle active" id="typeLine" onclick="changeChartType('line')">Line</button>
-              <button class="btn-toggle" id="typeCandle" onclick="changeChartType('bar')">Candles</button>
+              <button class="btn-toggle" id="typeLine" onclick="changeChartType('line')">Line</button>
+              <button class="btn-toggle active" id="typeCandle" onclick="changeChartType('candlestick')">Candles</button>
               <button class="btn-toggle btn-indicator" onclick="toggleIndicator('RSI')">RSI</button>
             </div>
           </div>
         </div>
         <div class="chart-container-frame">
           <canvas id="mainIntelligenceChart"></canvas>
+          <div class="chart-empty-state" id="chartEmptyState" style="display:none;">
+            No live chart data returned for this symbol and interval.
+          </div>
         </div>
       </section>
 
@@ -316,14 +334,17 @@
         <div class="panel-header flex-column-mobile">
           <h3>Global Intelligence Market Screener</h3>
           <div class="screener-filters">
-            <select id="filterSector" onchange="runScreener()">
+            <select id="filterSector">
               <option value="">All Sectors</option>
               <option value="Technology">Technology</option>
-              <option value="Financial">Financial Services</option>
+              <option value="Communication Services">Communication Services</option>
+              <option value="Financial Services">Financial Services</option>
               <option value="Healthcare">Healthcare</option>
               <option value="Consumer Cyclical">Consumer Cyclical</option>
+              <option value="Energy">Energy</option>
+              <option value="Cryptocurrency">Cryptocurrency</option>
             </select>
-            <select id="filterCap" onchange="runScreener()">
+            <select id="filterCap">
               <option value="">All Market Caps</option>
               <option value="mega">Mega Cap (>$200B)</option>
               <option value="large">Large Cap ($10B-$200B)</option>
@@ -342,7 +363,9 @@
                 <th>Market Cap</th>
               </tr>
             </thead>
-            <tbody id="screenerTableBody"></tbody>
+            <tbody id="screenerTableBody">
+              <tr><td colspan="6" class="text-muted" style="text-align:center;padding:20px;">Loading live market data…</td></tr>
+            </tbody>
           </table>
         </div>
       </section>
@@ -360,13 +383,16 @@
       <div class="panel-header margin-top">
         <h3>Trending Signals</h3>
       </div>
-      <div class="trending-container" id="trendingItemsContainer"></div>
+      <div class="trending-container" id="trendingItemsContainer">
+        <div class="empty-state">Loading live movers…</div>
+      </div>
     </aside>
 
   </div>
 
   <footer class="app-footer-bar">
-    <p>&copy; <span id="currentFooterYear">2026</span> StockDash Financial Terminal Network. All Rights Reserved.</p>
+    <p>&copy; <span id="currentFooterYear">2026</span> CrypStockDash Financial Terminal Network. All Rights Reserved.</p>
+    <p class="data-source-note">Market data via Yahoo Finance, refreshed live. For informational purposes only, not investment advice.</p>
   </footer>
 
   <script src="frontend/script.js"></script>

@@ -6,10 +6,15 @@
   --border-color: #2b3139;
   --accent-color: #00c076;
   --accent-down: #f23645;
+  --accent-warn: #f59e0b;
   --text-main: #eaecef;
   --text-muted: #848e9c;
-  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   --header-height: 64px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --focus-ring: 0 0 0 3px rgba(0, 192, 118, 0.35);
 }
 
 .light-mode {
@@ -21,6 +26,7 @@
   --accent-down: #d9383a;
   --text-main: #24292f;
   --text-muted: #57606a;
+  --focus-ring: 0 0 0 3px rgba(0, 150, 94, 0.3);
 }
 
 /* GLOBAL NORMALIZATION ELEMENT DEFAULTS */
@@ -38,6 +44,32 @@ body {
   line-height: 1.5;
   overflow-x: hidden;
   transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+/* Visible, on-brand focus rings for keyboard navigation everywhere */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+[tabindex]:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+  border-radius: var(--radius-sm);
+}
+
+/* Dark, terminal-appropriate scrollbars (WebKit) */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 8px;
+  border: 2px solid var(--bg-main);
+}
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+@media (prefers-reduced-motion: reduce) {
+  .tape-track { animation: none; }
+  * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
 }
 
 /* TOP SCROLLING TICKER TAPE OVERLAYS */
@@ -63,7 +95,7 @@ body {
   gap: 8px;
   padding: 0 24px;
   font-size: 12px;
-  font-family: monospace;
+  font-family: var(--font-mono);
   font-weight: 600;
   border-right: 1px solid var(--border-color);
 }
@@ -87,27 +119,10 @@ body {
   gap: 16px;
 }
 
-.app-footer-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 24px;
-  color: var(--text-muted);
-  font-size: 12px;
-  border-top: 1px solid var(--border-color);
-  background: var(--bg-surface);
-  margin-top: 40px;
-}
-
-#marketTimeLabel {
-  color: var(--text-muted);
-  font-weight: 500;
-}
-
 .brand {
   display: flex;
   align-items: center;
-  gap: 10px; /* Provides precise, readable horizontal spacing between image and text */
+  gap: 10px;
 }
 
 .brand h1 {
@@ -118,10 +133,9 @@ body {
   align-items: center;
 }
 
-/* KEEPS LOGO CRISP AND SNAPPED PERFECTIONALLY ALONGSIDE THE TEXT */
 .logo-img {
-  height: 24px;   /* Constrains vertical boundary height to match header rows */
-  width: auto;    /* Preserves original aspect ratio automatically */
+  height: 24px;
+  width: auto;
   object-fit: contain;
   display: block;
 }
@@ -145,6 +159,7 @@ body {
   display: flex;
   gap: 8px;
   position: relative;
+  flex-wrap: wrap;
 }
 
 .search-input-field {
@@ -167,7 +182,7 @@ body {
   border: 1px solid var(--border-color);
   color: var(--text-main);
   padding: 10px 12px 10px 36px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   font-size: 14px;
   outline: none;
   transition: border-color 0.2s;
@@ -175,6 +190,14 @@ body {
 
 .search-wrapper input:focus {
   border-color: var(--accent-color);
+}
+
+.search-status-message {
+  width: 100%;
+  order: 3;
+  font-size: 12px;
+  color: var(--accent-down);
+  padding: 6px 2px 0;
 }
 
 /* SUGGESTION DROPDOWN PORTAL OVERLAYS */
@@ -185,11 +208,11 @@ body {
   width: 100%;
   background-color: var(--bg-surface);
   border: 1px solid var(--border-color);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   max-height: 280px;
   overflow-y: auto;
   z-index: 9999;
-  box-shadow: 0 12px 32px rgba(0,0,0,0.35);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
   display: none;
 }
 
@@ -206,13 +229,22 @@ body {
   background-color: var(--bg-surface-hover);
 }
 
+.suggestion-row .comp-lbl {
+  color: var(--text-main);
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-right: 12px;
+}
+
 .suggestion-row .sym-badge {
   font-weight: 700;
   color: var(--accent-color);
   background: rgba(0, 192, 118, 0.1);
   padding: 2px 6px;
   border-radius: 4px;
-  font-family: monospace;
+  font-family: var(--font-mono);
 }
 
 /* BUTTON CONTROLLER COMPONENT ELEMENTS */
@@ -222,10 +254,13 @@ body {
   border: none;
   font-weight: 600;
   padding: 0 18px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   transition: opacity 0.15s;
+  min-height: 40px;
 }
+
+.btn-primary:hover { opacity: 0.9; }
 
 /* REFINED SIDEBAR SUB-ACTION HEADERS */
 .panel-header {
@@ -235,7 +270,7 @@ body {
   margin-bottom: 12px;
 }
 
-/* FIXING THE "+ ADD CURRENT" WATCHLIST BUTTON */
+/* "+ ADD CURRENT" WATCHLIST BUTTON */
 .btn-text {
   background: transparent;
   border: none;
@@ -250,69 +285,84 @@ body {
 }
 
 .btn-text:hover {
-  background-color: rgba(0, 192, 118, 0.1); /* Subtle green glow context on hover */
+  background-color: rgba(0, 192, 118, 0.1);
   opacity: 0.95;
 }
 
-/* Light mode override safety for the action text button */
 .light-mode .btn-text {
   color: var(--accent-color);
 }
 
-.btn-primary:hover { opacity: 0.9; }
-
-/* CONTAINER HOLDING THE TIMESTAMPS AND TOGGLE BUTTON */
+/* CONTAINER HOLDING THE STATUS PILL AND THEME TOGGLE */
 .header-actions {
   display: flex;
-  align-items: center; /* Vertically centers the pill and button on the same line */
-  gap: 12px;           /* Pushes the toggle button to the right of the live time with crisp spacing */
+  align-items: center;
+  gap: 12px;
 }
 
-/* THE BUTTON LOOKS LIKE AN INTEGRATED TERMINAL UTILITY */
 .btn-icon {
-  background: var(--bg-main);
+  background: rgba(255, 255, 255, 0.03);
   border: 1px solid var(--border-color);
   color: var(--text-main);
   font-size: 14px;
   padding: 6px 12px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 28px; /* Matches the exact height of your market status pill tag */
+  height: 32px;
+  min-width: 32px;
   transition: background-color 0.15s, border-color 0.15s;
 }
 
-.btn-icon:hover { 
-  background: var(--bg-surface-hover); 
+.btn-icon:hover {
+  background: var(--bg-surface-hover);
   border-color: var(--text-muted);
 }
 
-/* ALIGN THEME TOGGLE SIDE-BY-SIDE WITH TIME IN HEADER */
-.header-actions {
-  display: flex;
-  align-items: center; 
-  gap: 12px;           
-}
-
-.header-actions .btn-icon {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid var(--border-color);
-  color: var(--text-main);
-  cursor: pointer;
-  padding: 6px 12px;
-  border-radius: 6px;
-  display: flex;
+/* MARKET SESSION STATUS PILL (was previously unstyled) */
+.market-status-pill {
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  transition: background-color 0.15s, border-color 0.15s;
+  gap: 8px;
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border-color);
+  background: rgba(255, 255, 255, 0.03);
+  font-size: 12px;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  white-space: nowrap;
 }
 
-.header-actions .btn-icon:hover {
-  background-color: var(--bg-surface-hover);
-  border-color: var(--text-muted);
+.market-status-pill .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.market-status-pill.open .dot {
+  background: var(--accent-color);
+  box-shadow: 0 0 0 3px rgba(0, 192, 118, 0.18);
+  animation: pulseDot 2s ease-in-out infinite;
+}
+
+.market-status-pill.pending .dot {
+  background: var(--accent-warn);
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.18);
+}
+
+.market-status-pill.closed .dot {
+  background: var(--accent-down);
+}
+
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
 }
 
 /* CORE DASHBOARD RESPONSIVE DUAL-GRID */
@@ -325,10 +375,8 @@ body {
   margin: 0 auto;
 }
 
-/* SIDEBAR RE-ORDERING PANELS */
 .sidebar-panel {
   display: flex;
-  flex-column: wrap;
   flex-direction: column;
   gap: 16px;
 }
@@ -337,14 +385,14 @@ body {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  min-width: 0; /* Clear grid stretching issues */
+  min-width: 0;
 }
 
 /* REUSABLE PRO CARD DESIGN MATRIX ELEMENT */
 .card {
   background: var(--bg-surface);
   border: 1px solid var(--border-color);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   padding: 16px;
 }
 
@@ -359,10 +407,43 @@ body {
 
 /* STOCK OVERVIEW DETAILS PROFILE HERO CARD */
 .stock-hero-card {
+  position: relative;
   background: linear-gradient(135deg, var(--bg-surface) 0%, var(--bg-main) 100%);
   border: 1px solid var(--border-color);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   padding: 20px;
+}
+
+.hero-loading-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(11, 14, 17, 0.72);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  z-index: 5;
+  color: var(--text-muted);
+  font-size: 13px;
+  backdrop-filter: blur(1px);
+}
+
+.light-mode .hero-loading-overlay {
+  background: rgba(246, 248, 250, 0.78);
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid var(--border-color);
+  border-top-color: var(--accent-color);
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 .hero-layout-split {
@@ -397,13 +478,20 @@ body {
 .hero-core-profile h4 {
   color: var(--text-muted);
   font-weight: 500;
-  font-family: monospace;
+  font-family: var(--font-mono);
 }
 
 .price-value {
   font-size: 28px;
   font-weight: 800;
-  font-family: monospace;
+  font-family: var(--font-mono);
+}
+
+.price-change {
+  font-size: 14px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  margin-top: 4px;
 }
 
 .quick-stats-strip {
@@ -424,7 +512,7 @@ body {
 .strip-item span {
   font-size: 15px;
   font-weight: 700;
-  font-family: monospace;
+  font-family: var(--font-mono);
 }
 
 /* INTELLIGENT CHART VIEWPORT FRAME WORKSTATION */
@@ -459,7 +547,7 @@ body {
   display: flex;
   background: var(--bg-main);
   padding: 2px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   border: 1px solid var(--border-color);
 }
 
@@ -469,7 +557,7 @@ body {
   color: var(--text-muted);
   font-size: 12px;
   font-weight: 600;
-  padding: 6px 12px;
+  padding: 8px 12px;
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.15s;
@@ -480,15 +568,27 @@ body {
 .btn-toggle.active {
   background: var(--bg-surface-hover);
   color: var(--accent-color);
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
-.btn-indicator.active { color: #f59e0b; }
+.btn-indicator.active { color: var(--accent-warn); }
 
 .chart-container-frame {
   position: relative;
   width: 100%;
-  height: clamp(300px, 45vh, 500px); /* Secure aspect mapping dynamically scaled */
+  height: clamp(300px, 45vh, 500px);
+}
+
+.chart-empty-state {
+  position: absolute;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 13px;
+  padding: 24px;
 }
 
 /* DATA BREAKDOWNS SUB GRIDS ELEMENTS */
@@ -516,16 +616,17 @@ body {
   background: var(--bg-main);
   border: 1px solid var(--border-color);
   padding: 16px;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   text-align: center;
   min-width: 120px;
   flex: 1;
 }
 
 .gauge-value {
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 800;
   color: var(--accent-color);
+  font-family: var(--font-mono);
 }
 
 .gauge-label {
@@ -550,7 +651,7 @@ body {
 
 .data-table td {
   padding: 10px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.02);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.02);
 }
 
 .comparison-matrix th, .comparison-matrix td {
@@ -561,7 +662,7 @@ body {
 .comparison-matrix th {
   color: var(--text-muted);
   font-weight: 600;
-  background: rgba(0,0,0,0.05);
+  background: rgba(0, 0, 0, 0.05);
 }
 
 .comparison-matrix .active-col {
@@ -595,7 +696,7 @@ body {
 .watchlist-card, .trending-item {
   background: var(--bg-surface);
   border: 1px solid var(--border-color);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   padding: 12px;
   display: flex;
   justify-content: space-between;
@@ -610,13 +711,62 @@ body {
   background: var(--bg-surface-hover);
 }
 
+.trending-item .symbol {
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--text-main);
+}
+
+.trending-item .name {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.watchlist-card-main {
+  flex: 1;
+  cursor: pointer;
+}
+
+.watchlist-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-remove {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-muted);
+  font-size: 16px;
+  line-height: 1;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.btn-remove:hover {
+  background: rgba(242, 54, 69, 0.12);
+  color: var(--accent-down);
+  border-color: var(--accent-down);
+}
+
 .empty-state {
   text-align: center;
   padding: 24px;
   color: var(--text-muted);
   font-size: 12px;
   border: 1px dashed var(--border-color);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
 }
 
 /* SCREENER RUNNER CONTROLS PACK */
@@ -631,22 +781,27 @@ body {
   color: var(--text-main);
   border: 1px solid var(--border-color);
   padding: 6px 12px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   outline: none;
+  min-height: 36px;
 }
 
 /* HELPER UTILITIES PACK */
 .up { color: var(--accent-color) !important; }
 .down { color: var(--accent-down) !important; }
 .text-right { text-align: right; }
+.text-muted { color: var(--text-muted); }
+.text-accent { color: var(--accent-color); }
 .font-weight-bold { font-weight: 700; }
 .margin-top { margin-top: 20px; }
 .margin-top-sm { margin-top: 12px; }
 
 .app-footer-bar {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 4px;
   align-items: center;
+  text-align: center;
   padding: 16px 24px;
   color: var(--text-muted);
   font-size: 12px;
@@ -655,31 +810,34 @@ body {
   margin-top: 40px;
 }
 
-#marketTimeLabel {
-  font-weight: 500;
+.data-source-note {
+  font-size: 11px;
   color: var(--text-muted);
+  opacity: 0.85;
 }
 
 /* ====== BREAKPOINTS PACK FOR PHONE AND TABLET ====== */
 @media (max-width: 1024px) {
   .dashboard-grid {
-    grid-template-columns: 1fr; /* Snap sidebar element down below data view */
+    grid-template-columns: 1fr;
   }
   .sidebar-panel {
-    order: 2; /* Ensure watchlist flows underneath primary tracking charts */
+    order: 2;
   }
 }
 
 @media (max-width: 640px) {
   :root { --fluid-padding: 12px; }
-  
+
   .app-header {
     flex-direction: column;
     align-items: stretch;
   }
   .search-wrapper { max-width: 100%; }
+  .search-wrapper input { font-size: 16px; } /* prevents iOS auto-zoom on focus */
   .workstation-header { flex-direction: column; align-items: flex-start; }
   .hero-layout-split { flex-direction: column; text-align: left; }
   .hero-pricing.text-right { text-align: left; margin-top: 8px; }
   .flex-column-mobile { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .btn-toggle { min-height: 40px; }
 }
